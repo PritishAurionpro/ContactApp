@@ -1,3 +1,5 @@
+const Contact = require("./Contact")
+
 class User
 {
     static allUsers =[]
@@ -9,7 +11,8 @@ class User
         this.age = age,
         this.gender = gender,
         this.isAdmin = isAdmin
-        this.id = User.id++
+        this.id = User.id++,
+        this.contact = []
     }
 
     static createAdmin(name, age, gender)
@@ -63,7 +66,7 @@ class User
         
     }
 
-    getUser(id)
+    static #getUser(id) // static cuz not depends on one obj and private to denay acess
     {
         try {
             if(!this.isAdmin)
@@ -85,7 +88,7 @@ class User
         } catch (error) {
             console.log(error.message);  
         }
-        // return [null,-1]
+        return [null,-1]
       
     }
 
@@ -107,20 +110,20 @@ class User
         } catch (error) {
             console.log(error.message);
         }
-        let [userToBeUpdated, indexOfUserToBeUpdated] = this.getUser(id)
-        //User.allUsers[indexOfUserToBeUpdated].parameter = value  
+        let [userToBeUpdated, indexOfUserToBeUpdated] = this.#getUser(id)
+        //User.allUsers[indexOfUserToBeUpdated].paameter = value  
         switch(parameter)
         {
-            case 'name': userToBeUpdated.updateName(value)
+            case 'name': userToBeUpdated.#updateName(value)
                 break;
-            case 'age': userToBeUpdated.updateAge(value)
+            case 'age': userToBeUpdated.#updateAge(value)
                 break;
             default:
                 break;
         }
     } 
 
-    updateName(value)
+    #updateName(value) //make private
     {
         try {
             if(typeof value != 'string' )
@@ -132,7 +135,7 @@ class User
             console.log(error.message);
         }
     }
-    updateAge(value)
+    #updateAge(value) // make private
     {
         try {
             if(typeof value != 'number' )
@@ -149,6 +152,87 @@ class User
     {
         let [UserToBeDeleted, indexOfUserToBeDeleted] = this.getUser(id)
         User.allUsers.splice(indexOfUserToBeDeleted, 1)
+
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+    
+    createContact(name)
+    {
+        try {
+            if (this.isAdmin)
+            {
+                throw new Error("Admin cannot create")
+            }
+            if (typeof name != 'string')
+            {
+                throw new Error("Invalid name")
+            }
+            let newContact = new Contact(name)
+            this.contact.push(newContact)
+            return newContact
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    getAllContact()
+    {
+        return this.contact
+    }
+
+    getContact(contactId)
+    {
+        try {
+            if(this.isAdmin)
+            {
+                throw new Error("Admin has no access")
+            }
+            if(typeof id != 'number')
+            {
+                throw new Error("Invalid id");
+            }
+            let currentContactId = contactId
+            for(let index = 0; index<= this.contact.length; index++)
+            {
+                if (currentContactId == this.contact[index].id)
+                {
+                    return [this.contact[index],index]
+                }      
+            }  
+        } catch (error) {
+            console.log(error.message);  
+        }
+        return [null,-1]
+    }
+
+    updateContact(contactId, parameter, value)
+    {
+        try {
+            if(this.isAdmin)
+            {
+                throw new Error("Admin has no access")
+            }
+            if(typeof contactId != 'number')
+            {
+                throw new Error("Invalid id");
+            }
+            if(parameter != 'name')
+            { 
+                throw new Error("Invalid parameter")
+            }   
+        } catch (error) {
+            console.log(error.message);
+        }
+        let [contactToBeUpdated, indexOfContactToBeUpdated] = this.getContact(contactId) 
+       
+        contactToBeUpdated.updateContact(parameter, value)
+    }
+
+    deleteContact(contactId)
+    {
+        let [contactToBeDeleted, indexOfContactToBeDeleted] = this.getContact(contactId)
+        this.contact.splice(indexOfContactToBeDeleted, 1)
 
     }
 }
