@@ -1,4 +1,5 @@
 const Contact = require("./Contact")
+const ContactInfo = require("./ContactInfo")
 
 class User
 {
@@ -178,6 +179,14 @@ class User
 
     getAllContact()
     {
+        try {
+            if (this.isAdmin)
+            {
+                throw new Error("only user has access")
+            }
+        } catch (error) {
+            console.log(error.message)   
+        }
         return this.contact
     }
 
@@ -235,5 +244,91 @@ class User
         this.contact.splice(indexOfContactToBeDeleted, 1)
 
     }
+
+ ///////////////////////////////////////////////////////////////////////////////////
+ 
+    createContactInfoById(typeOfContact, valueOfContact, contactId)
+    {
+        try {
+            if (this.isAdmin)
+            {
+                throw new Error("Admin cannot create")
+            }
+            if (typeof contactId != 'number')
+            {
+                throw new Error("Invalid id")
+            }
+            if(foundContact == null)
+            {
+                throw new Error('contact not found')
+            }
+            let[foundContact, indexOfContact] = this.getContact(contactId)
+            let newContactInfo = foundContact.createContactInfo(typeOfContactInfo,valueOfContact)
+            return newContactInfo
+            // foundContact.createContactInfo(typeOfContact, valueOfContact)
+        } catch (error) {
+            console.log(error.message)
+        }
+            // this.getContact(contactId)
+            // let newContactInfo = new ContactInfo(name)
+            // this.contact.push(newContact)
+            // return newContact
+    }
+
+    getAllContactInfoByContactId(contactId)
+    {
+        try {
+            if (this.isAdmin)
+            {
+                throw new Error("Admin cannot access contact info")
+            }
+            if (typeof contactId != 'number')
+            {
+                throw new Error("Invalid id")
+            }
+            let[foundContact, indexOfContact] = this.getContact(contactId)
+            let allContactInfo = foundContact.getAllContactInfo()
+            return allContactInfo
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    updateContactInfoByContactId(contactId, parameter, newValue, contactInfoId)
+    {
+        try {
+            if(this.isAdmin)
+            {
+                throw new Error("admin dont have access")
+            }
+            let [foundContact, indexOfContact] = this.getContact(contactId)
+            foundContact.updateContactInfo(parameter, newValue, ContactInfoId)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    deleteContactInfoById(ContactId, ContactInfoId)
+    {
+        try {
+            if (this.isAdmin)
+            {
+                throw new Error("Admin cannot access contact info")
+            }
+            if (typeof contactId != 'number')
+            {
+                throw new Error("Invalid id")
+            }
+            let [foundContact, indexOfContact] = this.getContact(contactId)
+            if(foundContact == null)
+            {
+                throw new error("contact id not found")
+            }
+            foundContact.deleteContact(contactInfoId)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
 }
 module.exports = User
